@@ -1,14 +1,17 @@
-const { HttpError, ctrlWrapper } = require('../helpers');
+const { HttpError, ctrlWrapper } = require('../../helpers');
 
-const { Contact } = require('../models/contact');
+const { Contact } = require('../../models/contact');
 
 const getAll = async (req, res) => {
-    const result = await Contact.find();
-    res.json({
-        status: 'success',
-        code: 200,
-        data: {
-            result
+  const { _id: owner } = req.user;
+  const { page = 2, limit = 20 } = req.query;
+  const skip = (page - 1) * limit;
+  const result = await Contact.find({ owner }, { skip, limit }).populate("owner", "email");
+  res.json({
+      status: 'success',
+      code: 200,
+      data: {
+        result
         },
     });
 }
@@ -29,7 +32,8 @@ const getById = async (req, res) => {
 }
 
 const add = async (req, res) => {
-    const result = await Contact.create(req.body);
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ ...req.body, owner });
     res.status(201).json({
       status: 'success',
       code: 201,
