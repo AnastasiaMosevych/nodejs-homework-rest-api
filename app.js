@@ -11,6 +11,8 @@ const app = express();
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
+console.log(`==> ENV: ${app.get('env')}`)
+
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
